@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://varnika-handmade.com/sitemap.xml
+# Crawl-delay can be added for low-traffic servers, but most search engines ignore it.
