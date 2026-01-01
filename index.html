@@ -41,6 +41,25 @@
         </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Additive UX & consistency tweaks (safe, non-destructive)
+           - Ensure touch targets meet minimum 44px height
+           - Normalize product thumbnails and add subtle hover
+        */
+        button, .buy-now-btn, .btn-primary { min-height:44px; }
+        .gallery-item img, .product-thumb { object-fit: cover; }
+        .gallery-item .p-4 img, .gallery-item .p-6 img { max-height: 12rem; width:100%; display:block; }
+        .gallery-item:hover { transform: translateY(-4px); transition: transform 180ms ease; }
+        .mini-cart { position: fixed; right: 18px; bottom: 18px; z-index: 6000; width: 320px; max-width: calc(100% - 36px); }
+        .mini-cart .panel { background: white; border-radius: 14px; box-shadow: 0 8px 30px rgba(99, 102, 241, 0.08); overflow: hidden; }
+        .category-dropdown { position: relative; }
+        .category-dropdown .menu { position: absolute; right: 0; top: calc(100% + 6px); background: white; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); padding: 8px; display:none; }
+        .category-dropdown:hover .menu { display:block; }
+        @media (max-width: 640px) {
+            .gallery-item .p-4 img, .gallery-item .p-6 img { max-height: 10rem; }
+            .mini-cart { right: 12px; bottom: 12px; width: 92%; }
+        }
+    </style>
+    <style>
         body {
             box-sizing: border-box;
         }
@@ -1151,6 +1170,18 @@
                     <a href="#home" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">🏠 Home</a>
                     <a href="#about" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">💖 About Us</a>
                     <a href="#why-us" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">⭐ Why Varnika</a>
+                    <div class="relative category-dropdown">
+                        <button class="quicksand font-medium text-gray-700 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">📂 Categories ▾</button>
+                        <div class="menu">
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('all')">All</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('cards')">Greeting Cards</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('resin')">Resin Art</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('potrait')">Custom Portraits</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('embroidery')">Embroidery</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('bookmarks')">Bookmarks</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('hampers')">Gift Hampers</a>
+                        </div>
+                    </div>
                     <a href="#gallery" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">🖼️ Design Gallery</a>
                     <a href="#creations" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">🎨 What We Create</a>
                     <a href="#contact" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">📞 Contact</a>
@@ -1159,7 +1190,7 @@
                 <!-- Cart & Mobile Menu -->
                 <div class="flex items-center space-x-3">
                     <!-- Floating Cart -->
-                    <button class="floating-cart" id="floating-cart" style="position: relative; top: auto; right: auto;" aria-label="View shopping cart" role="button">
+                    <button class="floating-cart" id="floating-cart" onclick="toggleMiniCart()" style="position: relative; top: auto; right: auto;" aria-label="View shopping cart" role="button">
                         🛒 Cart<span class="cart-badge" id="cart-count" aria-label="0 items in cart" aria-live="polite">0</span>
                     </button>
                     
@@ -1180,6 +1211,13 @@
                 <a href="#gallery" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Design Gallery</a>
                 <a href="#creations" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🎨 What We Create</a>
                 <a href="#contact" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">📞 Contact</a>
+                <!-- Categories (mobile) - additive links that filter gallery client-side -->
+                <a href="#gallery" onclick="filterGalleryByCategory('cards')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">💌 Greeting Cards</a>
+                <a href="#gallery" onclick="filterGalleryByCategory('resin')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">💎 Resin Art</a>
+                <a href="#gallery" onclick="filterGalleryByCategory('potrait')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Custom Portraits</a>
+                <a href="#gallery" onclick="filterGalleryByCategory('embroidery')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🪡 Embroidery</a>
+                <a href="#gallery" onclick="filterGalleryByCategory('bookmarks')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🔖 Bookmarks</a>
+                <a href="#gallery" onclick="filterGalleryByCategory('hampers')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🎁 Gift Hampers</a>
             </div>
         </div>
     </nav>
@@ -1234,8 +1272,14 @@
                 <p class="quicksand text-lg md:text-xl text-purple-800 font-semibold text-shadow-soft">
                     🩷 Explore our pastel universe of handmade beauty!
                 </p>
+                <!-- One-line value proposition (additive) -->
+                <p class="quicksand text-sm text-gray-600 mt-3">Handcrafted • Customizable • Made with love</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mobile-space-y-4 animate-fade-in animate-delay-3">
+                <!-- Additional CTA: Explore Handmade Gifts (smooth-scroll to gallery) -->
+                <button onclick="document.getElementById('gallery').scrollIntoView({behavior: 'smooth'})" class="btn-primary glow-hover bg-white text-purple-800 quicksand shadow-lg touch-friendly interactive-element pulse-glow">
+                    Explore Handmade Gifts
+                </button>
                 <button onclick="document.getElementById('creations').scrollIntoView({behavior: 'smooth'})" 
                         class="btn-primary glow-hover bg-white text-purple-800 quicksand shadow-lg touch-friendly interactive-element pulse-glow">
                     Explore Our Creations ✨
@@ -3455,6 +3499,185 @@
         });
     </script>
     <script>
+        // Additive JS: gallery filtering, product detail modal routing, mini-cart and trust badges
+        function filterGalleryByCategory(cat) {
+            // Scroll to gallery section
+            const gallery = document.getElementById('gallery');
+            if (gallery) gallery.scrollIntoView({behavior: 'smooth'});
+
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach(it => {
+                const c = (it.getAttribute('data-category') || '').toLowerCase();
+                if (!cat || cat === 'all' || c.includes(cat.toLowerCase())) {
+                    it.style.display = '';
+                    it.classList.remove('hidden');
+                } else {
+                    it.style.display = 'none';
+                    it.classList.add('hidden');
+                }
+            });
+        }
+
+        // Product detail modal using client-side routing (pushState)
+        function openProductDetailFromItem(item) {
+            try {
+                const title = item.querySelector('h4, h3') ? (item.querySelector('h4, h3').textContent.trim()) : 'Product';
+                const imgEl = item.querySelector('img');
+                const img = imgEl ? imgEl.src : 'images.jpeg';
+                const desc = item.querySelector('p') ? item.querySelector('p').textContent.trim() : '';
+                const category = item.getAttribute('data-category') || '';
+
+                showProductModal({slug: slugify(title), title, img, desc, category});
+            } catch (e) { console.error(e); }
+        }
+
+        function slugify(text){ return String(text).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)+/g,''); }
+
+        function showProductModal(product) {
+            // create modal if not exists
+            let modal = document.getElementById('productModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'productModal';
+                modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-black/40" onclick="closeProductModal()"></div>
+                    <div class="relative max-w-3xl w-full bg-white rounded-2xl p-6 overflow-auto">
+                        <button class="absolute top-4 right-4 text-gray-600" onclick="closeProductModal()">✕</button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <img id="productModalImage" src="" alt="Product image" class="w-full h-72 object-cover rounded-lg" />
+                            </div>
+                            <div>
+                                <h2 id="productModalTitle" class="playfair text-2xl font-bold text-purple-800"></h2>
+                                <p id="productModalCategory" class="quicksand text-sm text-gray-500 mt-1"></p>
+                                <p id="productModalPrice" class="playfair text-xl text-purple-700 mt-4">₹499</p>
+                                <p id="productModalDesc" class="raleway text-gray-700 mt-3"></p>
+                                <ul class="text-sm text-gray-600 mt-3">
+                                    <li>Size: Standard / Custom sizes available</li>
+                                    <li>Material: Handpicked materials</li>
+                                    <li>Customization: Add a personalized note</li>
+                                    <li>Estimated delivery: 5-7 business days</li>
+                                </ul>
+                                <div class="mt-6 flex gap-3">
+                                    <button id="productModalOrder" class="buy-now-btn quicksand bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg">Order Now via WhatsApp</button>
+                                    <button onclick="addToCartFromModal()" class="btn-primary bg-white text-purple-800 border border-purple-100 py-2 px-4 rounded-lg">Add to Cart</button>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-3">Secure WhatsApp ordering • Handmade • Customizable</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            // populate
+            document.getElementById('productModalImage').src = product.img;
+            document.getElementById('productModalImage').alt = product.title;
+            document.getElementById('productModalTitle').textContent = product.title;
+            document.getElementById('productModalCategory').textContent = product.category;
+            document.getElementById('productModalDesc').textContent = product.desc;
+
+            // set order link
+            const orderBtn = document.getElementById('productModalOrder');
+            if (orderBtn) {
+                const text = encodeURIComponent(`Hi Varnika! I would like to order: ${product.title}`);
+                orderBtn.onclick = function(){ window.open(`https://wa.me/916305193711?text=${text}`,'_blank'); };
+            }
+
+            // set addToCart action
+            window._lastModalProduct = product; // store for addToCartFromModal
+
+            // pushState so URL appears like /products/slug
+            try { history.pushState({}, '', '/products/' + product.slug); } catch(e){}
+        }
+
+        function closeProductModal(){
+            const modal = document.getElementById('productModal');
+            if (modal) modal.remove();
+            try { history.pushState({}, '', '/'); } catch(e){}
+        }
+
+        function addToCartFromModal(){
+            const p = window._lastModalProduct; if (!p) return;
+            // reuse existing addToCart if available
+            if (typeof addToCart === 'function') {
+                addToCart(p.title, 499, '🎁');
+            } else {
+                alert('Add to cart not available');
+            }
+        }
+
+        // Mini-cart (reads existing varnika_cart and uses existing functions where possible)
+        function toggleMiniCart(){
+            const el = document.getElementById('miniCart');
+            if (!el) return;
+            el.classList.toggle('hidden');
+            renderMiniCart();
+        }
+
+        function renderMiniCart(){
+            const container = document.getElementById('miniCartContent');
+            if (!container) return;
+            let cart = [];
+            try { cart = JSON.parse(localStorage.getItem('varnika_cart')) || []; } catch(e){ cart=[]; }
+            container.innerHTML = '';
+            if (cart.length === 0) { container.innerHTML = '<p class="poppins text-gray-600 p-4">Your cart is empty.</p>'; return; }
+            let total = 0;
+            cart.forEach(item=>{
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between p-3 border-b';
+                row.innerHTML = `<div><div class="poppins font-semibold">${escapeHtml(item.name)}</div><div class="quicksand text-sm text-gray-500">₹${item.price} x ${item.quantity}</div></div>`;
+                // qty controls
+                const controls = document.createElement('div');
+                controls.className = 'flex items-center gap-2';
+                const dec = document.createElement('button'); dec.textContent='-'; dec.className='px-2 py-1 bg-gray-100 rounded'; dec.onclick = ()=>{ if(typeof updateQuantity==='function') updateQuantity(item.name,-1); renderMiniCart(); };
+                const inc = document.createElement('button'); inc.textContent='+'; inc.className='px-2 py-1 bg-gray-100 rounded'; inc.onclick = ()=>{ if(typeof updateQuantity==='function') updateQuantity(item.name,1); renderMiniCart(); };
+                const rm = document.createElement('button'); rm.textContent='Remove'; rm.className='text-xs text-red-600'; rm.onclick = ()=>{ if(typeof removeFromCart==='function') removeFromCart(item.name); renderMiniCart(); };
+                controls.appendChild(dec); controls.appendChild(inc); controls.appendChild(rm);
+                row.appendChild(controls);
+                container.appendChild(row);
+                total += (Number(item.price)||0) * (Number(item.quantity)||1);
+            });
+            const foot = document.createElement('div'); foot.className='p-4'; foot.innerHTML = `<div class="flex items-center justify-between font-semibold"><div>Total</div><div>₹${total}</div></div><div class="mt-3"><button onclick="miniCartCheckout(${total})" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 rounded-lg">Proceed to WhatsApp Checkout</button></div>`;
+            container.appendChild(foot);
+        }
+
+        function miniCartCheckout(total){
+            // Build WhatsApp message similar to product checkout
+            let cart = []; try { cart = JSON.parse(localStorage.getItem('varnika_cart')) || []; } catch(e){ cart=[]; }
+            if (cart.length === 0) { alert('Your cart is empty'); return; }
+            let msg = `Hi Varnika! I'd like to order the following items:\n\n`;
+            cart.forEach(i=>{ msg += `${i.quantity} x ${i.name} - ₹${i.price * i.quantity}\n`; });
+            msg += `\nTotal: ₹${total}\n\nPlease let me know next steps.`;
+            const url = `https://wa.me/916305193711?text=${encodeURIComponent(msg)}`;
+            window.open(url,'_blank');
+        }
+
+        // Trust badges injection (additive) - insert small badges into gallery cards
+        function insertTrustBadges(){
+            document.querySelectorAll('.gallery-item .p-4').forEach(el=>{
+                if (el.querySelector('.trust-badges')) return;
+                const wrap = document.createElement('div'); wrap.className = 'trust-badges mt-3 flex gap-2 items-center';
+                wrap.innerHTML = `<span class="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full">Handmade</span><span class="text-xs bg-pink-50 text-pink-700 px-2 py-1 rounded-full">Customizable</span>`;
+                el.appendChild(wrap);
+            });
+        }
+
+        // Run a few safe initializers
+        document.addEventListener('DOMContentLoaded', () => { 
+            try { insertTrustBadges(); } catch(e){}
+            try {
+                // Bind product modal openers on image/title clicks (non-destructive)
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    const clickTarget = item.querySelector('img, h4, h3');
+                    if (clickTarget) {
+                        clickTarget.style.cursor = 'pointer';
+                        clickTarget.addEventListener('click', (ev)=>{ ev.stopPropagation(); openProductDetailFromItem(item); });
+                    }
+                });
+            } catch(e){}
+        });
         // Runtime: remove all visible price tags from gallery items
         document.addEventListener('DOMContentLoaded', () => {
             // Remove price display elements from gallery cards
@@ -3669,5 +3892,43 @@
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'993a8f8d2041ff73',t:'MTc2MTMyMDMwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
+<!-- Mini Cart Panel (added) -->
+<div id="miniCart" class="mini-cart hidden">
+    <div class="panel">
+        <div class="p-4 border-b flex items-center justify-between">
+            <div class="font-semibold poppins">Your Cart</div>
+            <button onclick="toggleMiniCart()" class="text-gray-600">✕</button>
+        </div>
+        <div id="miniCartContent" style="max-height:320px; overflow:auto;"></div>
+    </div>
+</div>
+<script>
+    // Generate lightweight product JSON-LD from gallery items for SEO (additive)
+    document.addEventListener('DOMContentLoaded', ()=>{
+        try{
+            const products = [];
+            document.querySelectorAll('.gallery-item').forEach(item=>{
+                const title = item.querySelector('h4,h3') ? item.querySelector('h4,h3').textContent.trim() : '';
+                const img = item.querySelector('img') ? item.querySelector('img').src : '';
+                const desc = item.querySelector('p') ? item.querySelector('p').textContent.trim() : '';
+                if(title){
+                    products.push({
+                        "@type": "Product",
+                        "name": title,
+                        "image": img ? [img] : [],
+                        "description": desc || 'Handmade product by Varnika',
+                        "offers": { "@type": "Offer", "price": "499", "priceCurrency": "INR", "availability": "http://schema.org/InStock" }
+                    });
+                }
+            });
+            if(products.length){
+                const ld = { "@context": "https://schema.org", "@type": "ItemList", "itemListElement": products.map((p,i)=>({ "@type":"ListItem", "position": i+1, "item": p })) };
+                const s = document.createElement('script'); s.type='application/ld+json'; s.textContent = JSON.stringify(ld);
+                document.head.appendChild(s);
+            }
+        }catch(e){console.error('schema error',e)}
+    });
+</script>
 
 
