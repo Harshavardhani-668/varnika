@@ -1211,13 +1211,18 @@
                 <a href="#gallery" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Design Gallery</a>
                 <a href="#creations" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🎨 What We Create</a>
                 <a href="#contact" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">📞 Contact</a>
-                <!-- Categories (mobile) - additive links that filter gallery client-side -->
-                <a href="#gallery" onclick="filterGalleryByCategory('cards')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">💌 Greeting Cards</a>
-                <a href="#gallery" onclick="filterGalleryByCategory('resin')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">💎 Resin Art</a>
-                <a href="#gallery" onclick="filterGalleryByCategory('potrait')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Custom Portraits</a>
-                <a href="#gallery" onclick="filterGalleryByCategory('embroidery')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🪡 Embroidery</a>
-                <a href="#gallery" onclick="filterGalleryByCategory('bookmarks')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🔖 Bookmarks</a>
-                <a href="#gallery" onclick="filterGalleryByCategory('hampers')" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🎁 Gift Hampers</a>
+                <!-- Categories (mobile) - grouped under a small header, additive -->
+                <div class="pt-2 border-t border-purple-50">
+                    <div class="text-sm font-semibold quicksand px-4 pt-2">Categories</div>
+                    <div class="mt-2 space-y-1">
+                        <a href="#gallery" onclick="filterGalleryByCategory('cards')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">💌 Greeting Cards</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('resin')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">💎 Resin Art</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('potrait')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Custom Portraits</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('embroidery')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🪡 Embroidery</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('bookmarks')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🔖 Bookmarks</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('hampers')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🎁 Gift Hampers</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
