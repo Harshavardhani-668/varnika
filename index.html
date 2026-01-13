@@ -41,6 +41,25 @@
         </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Additive UX & consistency tweaks (safe, non-destructive)
+           - Ensure touch targets meet minimum 44px height
+           - Normalize product thumbnails and add subtle hover
+        */
+        button, .buy-now-btn, .btn-primary { min-height:44px; }
+        .gallery-item img, .product-thumb { object-fit: cover; }
+        .gallery-item .p-4 img, .gallery-item .p-6 img { max-height: 12rem; width:100%; display:block; }
+        .gallery-item:hover { transform: translateY(-4px); transition: transform 180ms ease; }
+        .mini-cart { position: fixed; right: 18px; bottom: 18px; z-index: 6000; width: 320px; max-width: calc(100% - 36px); }
+        .mini-cart .panel { background: white; border-radius: 14px; box-shadow: 0 8px 30px rgba(99, 102, 241, 0.08); overflow: hidden; }
+        .category-dropdown { position: relative; }
+        .category-dropdown .menu { position: absolute; right: 0; top: calc(100% + 6px); background: white; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.08); padding: 8px; display:none; }
+        .category-dropdown:hover .menu { display:block; }
+        @media (max-width: 640px) {
+            .gallery-item .p-4 img, .gallery-item .p-6 img { max-height: 10rem; }
+            .mini-cart { right: 12px; bottom: 12px; width: 92%; }
+        }
+    </style>
+    <style>
         body {
             box-sizing: border-box;
         }
@@ -1151,6 +1170,18 @@
                     <a href="#home" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">🏠 Home</a>
                     <a href="#about" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">💖 About Us</a>
                     <a href="#why-us" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">⭐ Why Varnika</a>
+                    <div class="relative category-dropdown">
+                        <button class="quicksand font-medium text-gray-700 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">📂 Categories ▾</button>
+                        <div class="menu">
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('all')">All</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('cards')">Greeting Cards</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('resin')">Resin Art</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('potrait')">Custom Portraits</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('embroidery')">Embroidery</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('bookmarks')">Bookmarks</a>
+                            <a href="#gallery" class="block quicksand px-3 py-2 text-gray-700 hover:bg-purple-50 rounded-md" onclick="filterGalleryByCategory('hampers')">Gift Hampers</a>
+                        </div>
+                    </div>
                     <a href="#gallery" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">🖼️ Design Gallery</a>
                     <a href="#creations" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">🎨 What We Create</a>
                     <a href="#contact" class="nav-link quicksand font-medium text-gray-700 hover:text-purple-600 px-3 py-2 rounded-lg hover:bg-purple-50 transition-all touch-friendly interactive-element">📞 Contact</a>
@@ -1159,7 +1190,7 @@
                 <!-- Cart & Mobile Menu -->
                 <div class="flex items-center space-x-3">
                     <!-- Floating Cart -->
-                    <button class="floating-cart" id="floating-cart" style="position: relative; top: auto; right: auto;" aria-label="View shopping cart" role="button">
+                    <button class="floating-cart" id="floating-cart" onclick="toggleMiniCart()" style="position: relative; top: auto; right: auto;" aria-label="View shopping cart" role="button">
                         🛒 Cart<span class="cart-badge" id="cart-count" aria-label="0 items in cart" aria-live="polite">0</span>
                     </button>
                     
@@ -1180,6 +1211,18 @@
                 <a href="#gallery" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Design Gallery</a>
                 <a href="#creations" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">🎨 What We Create</a>
                 <a href="#contact" class="block quicksand font-medium text-gray-700 hover:text-purple-600 py-3 px-4 rounded-lg hover:bg-purple-50 transition-all">📞 Contact</a>
+                <!-- Categories (mobile) - grouped under a small header, additive -->
+                <div class="pt-2 border-t border-purple-50">
+                    <div class="text-sm font-semibold quicksand px-4 pt-2">Categories</div>
+                    <div class="mt-2 space-y-1">
+                        <a href="#gallery" onclick="filterGalleryByCategory('cards')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">💌 Greeting Cards</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('resin')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">💎 Resin Art</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('potrait')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🖼️ Custom Portraits</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('embroidery')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🪡 Embroidery</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('bookmarks')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🔖 Bookmarks</a>
+                        <a href="#gallery" onclick="filterGalleryByCategory('hampers')" class="block quicksand text-gray-700 py-2 px-4 rounded-lg hover:bg-purple-50 transition-all">🎁 Gift Hampers</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
@@ -1234,8 +1277,14 @@
                 <p class="quicksand text-lg md:text-xl text-purple-800 font-semibold text-shadow-soft">
                     🩷 Explore our pastel universe of handmade beauty!
                 </p>
+                <!-- One-line value proposition (additive) -->
+                <p class="quicksand text-sm text-gray-600 mt-3">Handcrafted • Customizable • Made with love</p>
             </div>
             <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mobile-space-y-4 animate-fade-in animate-delay-3">
+                <!-- Additional CTA: Explore Handmade Gifts (smooth-scroll to gallery) -->
+                <button onclick="document.getElementById('gallery').scrollIntoView({behavior: 'smooth'})" class="btn-primary glow-hover bg-white text-purple-800 quicksand shadow-lg touch-friendly interactive-element pulse-glow">
+                    Explore Handmade Gifts
+                </button>
                 <button onclick="document.getElementById('creations').scrollIntoView({behavior: 'smooth'})" 
                         class="btn-primary glow-hover bg-white text-purple-800 quicksand shadow-lg touch-friendly interactive-element pulse-glow">
                     Explore Our Creations ✨
@@ -2092,8 +2141,16 @@
                 <div class="mt-16 max-w-2xl mx-auto">
                     <h2 class="playfair text-3xl md:text-4xl font-bold text-center mb-2 text-purple-800">Share Your Review</h2>
                     <p class="text-center text-gray-700 mb-8 quicksand">Tell us about your Varnika experience and help other gift givers find the perfect present!</p>
-                
-                    <div class="bg-white floating-shadow rounded-3xl p-6 md:p-8">
+
+                    <!-- FAQ: Pricing & Customization (informational only) -->
+                    <div id="faq-pricing" class="max-w-3xl mx-auto mb-8 text-left">
+                        <div class="bg-white rounded-xl p-4 shadow-sm">
+                            <h3 class="playfair text-lg font-bold text-purple-800">Why does price vary for similar designs?</h3>
+                            <p class="raleway text-sm text-gray-700 mt-2">All our products are handmade. Even similar designs can vary in size, materials, time, and level of detailing, so prices may differ. The prices shown are starting/base prices — final quotes will be confirmed on WhatsApp before order.</p>
+                        </div>
+                    </div>
+
+                        <div class="bg-white floating-shadow rounded-3xl p-6 md:p-8">
                         <form id="reviewForm" class="space-y-6">
                             <!-- Name Input -->
                             <div>
@@ -2688,17 +2745,40 @@
             customCart = customCart || [];
         }
         
-        function addToCart(name, price, icon) {
+        // Add to cart: include `basePrice` (starting/base prices only) when available.
+        // This is additive: existing callers may pass (name, price, icon) only.
+        function addToCart(name, price, icon, basePrice) {
+            // determine basePrice if not provided (try product slug/category lookup)
+            let bp = typeof basePrice !== 'undefined' ? basePrice : null;
+            try {
+                if (!bp) {
+                    // Try slug/title lookup from basePrices
+                    bp = getBasePrice({ title: name });
+                }
+                if (!bp) {
+                    // Try to find a gallery item with a matching data-name attribute and read its category
+                    const el = document.querySelector(`[data-name="${name}"]`);
+                    const parent = el ? el.closest('.gallery-item') : null;
+                    const cat = parent ? parent.getAttribute('data-category') : null;
+                    if (cat) bp = getBasePrice({ category: cat });
+                }
+            } catch (e) {
+                bp = bp || null;
+            }
+
             const existingItem = cart.find(item => item.name === name);
             
             if (existingItem) {
                 existingItem.quantity += 1;
+                // keep existing basePrice if already set, otherwise set now
+                if (!existingItem.basePrice && bp) existingItem.basePrice = bp;
             } else {
                 cart.push({
                     name: name,
                     price: price,
                     icon: icon,
-                    quantity: 1
+                    quantity: 1,
+                    basePrice: bp // starting/base price only
                 });
             }
             
@@ -2778,7 +2858,14 @@
 
                     const priceDiv = document.createElement('div');
                     priceDiv.className = 'cart-item-price quicksand';
+                    // Show existing price field (legacy) and a subtle starting/base price when available
                     priceDiv.textContent = '₹' + item.price + ' each';
+                    if (item.basePrice) {
+                        const bp = document.createElement('div');
+                        bp.className = 'text-xs text-gray-500';
+                        bp.textContent = `Starting from ₹${item.basePrice}`; // starting/base prices only
+                        priceDiv.appendChild(bp);
+                    }
 
                     const qtyControls = document.createElement('div');
                     qtyControls.className = 'quantity-controls';
@@ -2820,6 +2907,13 @@
                     const totalDiv = document.createElement('div');
                     totalDiv.className = 'playfair font-bold text-purple-800';
                     totalDiv.textContent = '₹' + (item.price * item.quantity);
+                    // Optional: show subtotal based on starting/base price (visual only)
+                    if (item.basePrice) {
+                        const sub = document.createElement('div');
+                        sub.className = 'text-xs text-gray-500';
+                        sub.textContent = `Base subtotal: ₹${item.basePrice * item.quantity}`;
+                        totalDiv.appendChild(sub);
+                    }
                     right.appendChild(totalDiv);
 
                     cartItem.appendChild(left);
@@ -3024,6 +3118,29 @@
         }
         
         // Enhanced Filter System
+        // Starting / base prices (informational only - does not lock final price)
+        const basePrices = {
+            cards: 50,
+            resin: 50,
+            paintings: 200,
+            embroidery: 30,
+            bookmarks: 40,
+            hampers: 499,
+            // add product-specific slugs here if you want finer control:
+            // "watercolor-birthday-card": 149,
+        };
+
+        function getBasePrice(opts) {
+            opts = opts || {};
+            const cat = (opts.category || '').toString().toLowerCase();
+            const title = (opts.title || '').toString();
+            const slug = title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)+/g,'');
+            // product-specific slug override first
+            if (slug && basePrices[slug]) return basePrices[slug];
+            if (cat && basePrices[cat]) return basePrices[cat];
+            return null;
+        }
+
         // Normalize gallery card markup at runtime so all cards share a single, consistent layout
         function normalizeGalleryCards() {
             const galleryItems = document.querySelectorAll('.gallery-item');
@@ -3098,7 +3215,12 @@
 
                 const priceSpan = document.createElement('div');
                 priceSpan.className = 'poppins font-semibold text-purple-700';
-                priceSpan.textContent = price ? `₹${price}` : '';
+                const basePrice = getBasePrice({ category, title });
+                if (basePrice) {
+                    priceSpan.textContent = `Starting from ₹${basePrice}`;
+                } else {
+                    priceSpan.textContent = price ? `₹${price}` : '';
+                }
 
                 const addBtn = document.createElement('button');
                 addBtn.className = 'add-to-cart-btn flex-1';
@@ -3110,6 +3232,14 @@
 
                 priceAndButtons.appendChild(priceSpan);
                 priceAndButtons.appendChild(addBtn);
+
+                // Add mandatory customization disclaimer when we show a starting price
+                if (basePrice) {
+                    const disc = document.createElement('p');
+                    disc.className = 'text-xs text-gray-500 mt-1';
+                    disc.textContent = 'Final price depends on size, detailing, and customization. Quote will be confirmed on WhatsApp before order.';
+                    content.appendChild(disc);
+                }
 
                 content.appendChild(titleNode);
                 if (descNode.textContent) content.appendChild(descNode);
@@ -3432,7 +3562,14 @@
                         const name = btn.getAttribute('data-name');
                         const price = Number(btn.getAttribute('data-price')) || 0;
                         const icon = btn.getAttribute('data-icon') || '';
-                        addToCart(name, price, icon);
+                        // compute basePrice from the button's containing gallery-item category when possible
+                        let bp = null;
+                        try {
+                            const parent = btn.closest('.gallery-item');
+                            const cat = parent ? parent.getAttribute('data-category') : null;
+                            bp = getBasePrice({ category: cat, title: name }) || null;
+                        } catch (e) { bp = null; }
+                        addToCart(name, price, icon, bp);
                     });
                 });
 
@@ -3455,6 +3592,230 @@
         });
     </script>
     <script>
+        // Additive JS: gallery filtering, product detail modal routing, mini-cart and trust badges
+        function filterGalleryByCategory(cat) {
+            // Scroll to gallery section
+            const gallery = document.getElementById('gallery');
+            if (gallery) gallery.scrollIntoView({behavior: 'smooth'});
+
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach(it => {
+                const c = (it.getAttribute('data-category') || '').toLowerCase();
+                if (!cat || cat === 'all' || c.includes(cat.toLowerCase())) {
+                    it.style.display = '';
+                    it.classList.remove('hidden');
+                } else {
+                    it.style.display = 'none';
+                    it.classList.add('hidden');
+                }
+            });
+        }
+
+        // Product detail modal using client-side routing (pushState)
+        function openProductDetailFromItem(item) {
+            try {
+                const title = item.querySelector('h4, h3') ? (item.querySelector('h4, h3').textContent.trim()) : 'Product';
+                const imgEl = item.querySelector('img');
+                const img = imgEl ? imgEl.src : 'images.jpeg';
+                const desc = item.querySelector('p') ? item.querySelector('p').textContent.trim() : '';
+                const category = item.getAttribute('data-category') || '';
+
+                showProductModal({slug: slugify(title), title, img, desc, category});
+            } catch (e) { console.error(e); }
+        }
+
+        function slugify(text){ return String(text).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)+/g,''); }
+
+        function showProductModal(product) {
+            // create modal if not exists
+            let modal = document.getElementById('productModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'productModal';
+                modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+                modal.innerHTML = `
+                    <div class="absolute inset-0 bg-black/40" onclick="closeProductModal()"></div>
+                    <div class="relative max-w-3xl w-full bg-white rounded-2xl p-6 overflow-auto">
+                        <button class="absolute top-4 right-4 text-gray-600" onclick="closeProductModal()">✕</button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <img id="productModalImage" src="" alt="Product image" class="w-full h-72 object-cover rounded-lg" />
+                            </div>
+                            <div>
+                                <h2 id="productModalTitle" class="playfair text-2xl font-bold text-purple-800"></h2>
+                                <p id="productModalCategory" class="quicksand text-sm text-gray-500 mt-1"></p>
+                                <p id="productModalPrice" class="playfair text-xl text-purple-700 mt-4"></p>
+                                <p id="productModalDesc" class="raleway text-gray-700 mt-3"></p>
+                                <ul class="text-sm text-gray-600 mt-3">
+                                    <li>Size: Standard / Custom sizes available</li>
+                                    <li>Material: Handpicked materials</li>
+                                    <li>Customization: Add a personalized note</li>
+                                    <li>Estimated delivery: 5-7 business days</li>
+                                </ul>
+                                <div class="mt-6 flex gap-3">
+                                    <button id="productModalOrder" class="buy-now-btn quicksand bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 px-4 rounded-lg">Order Now via WhatsApp</button>
+                                    <button onclick="addToCartFromModal()" class="btn-primary bg-white text-purple-800 border border-purple-100 py-2 px-4 rounded-lg">Add to Cart</button>
+                                </div>
+                                <p class="text-sm text-gray-500 mt-3">Secure WhatsApp ordering • Handmade • Customizable</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+
+            // populate
+            document.getElementById('productModalImage').src = product.img;
+            document.getElementById('productModalImage').alt = product.title;
+            document.getElementById('productModalTitle').textContent = product.title;
+            document.getElementById('productModalCategory').textContent = product.category;
+            document.getElementById('productModalDesc').textContent = product.desc;
+
+            // set order link (include starting/base price lines for clarity)
+            const orderBtn = document.getElementById('productModalOrder');
+            const productModalPriceEl = document.getElementById('productModalPrice');
+            if (productModalPriceEl) {
+                const bp = getBasePrice({ category: product.category, title: product.title });
+                if (bp) {
+                    productModalPriceEl.textContent = `Starting from ₹${bp}`;
+                } else {
+                    // leave existing text, or empty if none
+                    if (!productModalPriceEl.textContent.trim()) productModalPriceEl.textContent = '';
+                }
+                // ensure disclaimer exists/updated
+                let disc = document.getElementById('productModalDisclaimer');
+                if (!disc) {
+                    disc = document.createElement('p');
+                    disc.id = 'productModalDisclaimer';
+                    disc.className = 'text-xs text-gray-500 mt-2';
+                    productModalPriceEl.parentNode.insertBefore(disc, productModalPriceEl.nextSibling);
+                }
+                if (bp) {
+                    disc.textContent = 'Final price depends on size, detailing, and customization. Quote will be confirmed on WhatsApp before order.';
+                } else {
+                    disc.textContent = '';
+                }
+            }
+
+            if (orderBtn) {
+                const bpVal = getBasePrice({ category: product.category, title: product.title });
+                const encoded = encodeURIComponent(`Hi Varnika! I would like to order: ${product.title}\n${bpVal ? '\nBase price starts from ₹' + bpVal + '\n' : ''}\nFinal price depends on size, detailing, and customization. Quote will be confirmed on WhatsApp before order.`);
+                orderBtn.onclick = function(){ window.open(`https://wa.me/916305193711?text=${encoded}`,'_blank'); };
+            }
+
+            // set addToCart action
+            window._lastModalProduct = product; // store for addToCartFromModal
+
+            // pushState so URL appears like /products/slug
+            try { history.pushState({}, '', '/products/' + product.slug); } catch(e){}
+        }
+
+        function closeProductModal(){
+            const modal = document.getElementById('productModal');
+            if (modal) modal.remove();
+            try { history.pushState({}, '', '/'); } catch(e){}
+        }
+
+        function addToCartFromModal(){
+            const p = window._lastModalProduct; if (!p) return;
+            // reuse existing addToCart if available (use base price where available)
+            if (typeof addToCart === 'function') {
+                const bp = getBasePrice({ category: p.category, title: p.title }) || 499;
+                addToCart(p.title, bp, '🎁');
+            } else {
+                alert('Add to cart not available');
+            }
+        }
+
+        // Mini-cart (reads existing varnika_cart and uses existing functions where possible)
+        function toggleMiniCart(){
+            const el = document.getElementById('miniCart');
+            if (!el) return;
+            el.classList.toggle('hidden');
+            renderMiniCart();
+        }
+
+        function renderMiniCart(){
+            const container = document.getElementById('miniCartContent');
+            if (!container) return;
+            let cart = [];
+            try { cart = JSON.parse(localStorage.getItem('varnika_cart')) || []; } catch(e){ cart=[]; }
+            container.innerHTML = '';
+            if (cart.length === 0) { container.innerHTML = '<p class="poppins text-gray-600 p-4">Your cart is empty.</p>'; return; }
+            let total = 0;
+            cart.forEach(item=>{
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between p-3 border-b';
+                row.innerHTML = `<div><div class="poppins font-semibold">${escapeHtml(item.name)}</div><div class=\"quicksand text-sm text-gray-500\">₹${item.price} x ${item.quantity}</div></div>`;
+                // qty controls
+                const controls = document.createElement('div');
+                controls.className = 'flex items-center gap-2';
+                const dec = document.createElement('button'); dec.textContent='-'; dec.className='px-2 py-1 bg-gray-100 rounded'; dec.onclick = ()=>{ if(typeof updateQuantity==='function') updateQuantity(item.name,-1); renderMiniCart(); };
+                const inc = document.createElement('button'); inc.textContent='+'; inc.className='px-2 py-1 bg-gray-100 rounded'; inc.onclick = ()=>{ if(typeof updateQuantity==='function') updateQuantity(item.name,1); renderMiniCart(); };
+                const rm = document.createElement('button'); rm.textContent='Remove'; rm.className='text-xs text-red-600'; rm.onclick = ()=>{ if(typeof removeFromCart==='function') removeFromCart(item.name); renderMiniCart(); };
+                controls.appendChild(dec); controls.appendChild(inc); controls.appendChild(rm);
+                row.appendChild(controls);
+                // Show starting/base price (visual only)
+                if (item.basePrice) {
+                    const bp = document.createElement('div');
+                    bp.className = 'text-xs text-gray-500 ml-4';
+                    bp.textContent = `Starting from ₹${item.basePrice}`;
+                    row.querySelector('div').appendChild(bp);
+                    // optional base subtotal
+                    const baseSub = document.createElement('div');
+                    baseSub.className = 'text-xs text-gray-500 ml-4';
+                    baseSub.textContent = `Base subtotal: ₹${item.basePrice * item.quantity}`;
+                    row.querySelector('div').appendChild(baseSub);
+                }
+                container.appendChild(row);
+                total += (Number(item.price)||0) * (Number(item.quantity)||1);
+            });
+            const foot = document.createElement('div'); foot.className='p-4'; foot.innerHTML = `<div class="flex items-center justify-between font-semibold"><div>Total</div><div>₹${total}</div></div><div class="mt-3"><button onclick="miniCartCheckout(${total})" class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white py-2 rounded-lg">Proceed to WhatsApp Checkout</button></div>`;
+            container.appendChild(foot);
+        }
+
+        function miniCartCheckout(total){
+            // Build WhatsApp message similar to product checkout
+            let cart = []; try { cart = JSON.parse(localStorage.getItem('varnika_cart')) || []; } catch(e){ cart=[]; }
+            if (cart.length === 0) { alert('Your cart is empty'); return; }
+            let msg = `Hi Varnika! I'd like to order the following items:\n\n`;
+            cart.forEach(i=>{
+                msg += `${i.quantity} x ${i.name} - ₹${i.price * i.quantity}\n`;
+                const bp = (i.basePrice || getBasePrice({ title: i.name })) || null;
+                if (bp) msg += `Base price starts from ₹${bp}\n`;
+                msg += '\n';
+            });
+            msg += `Total: ₹${total}\n\n`;
+            // Add overall customization notice
+            msg += `Final price depends on size, detailing, and customization. Quote will be confirmed on WhatsApp before order.`;
+            const url = `https://wa.me/916305193711?text=${encodeURIComponent(msg)}`;
+            window.open(url,'_blank');
+        }
+
+        // Trust badges injection (additive) - insert small badges into gallery cards
+        function insertTrustBadges(){
+            document.querySelectorAll('.gallery-item .p-4').forEach(el=>{
+                if (el.querySelector('.trust-badges')) return;
+                const wrap = document.createElement('div'); wrap.className = 'trust-badges mt-3 flex gap-2 items-center';
+                wrap.innerHTML = `<span class="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full">Handmade</span><span class="text-xs bg-pink-50 text-pink-700 px-2 py-1 rounded-full">Customizable</span>`;
+                el.appendChild(wrap);
+            });
+        }
+
+        // Run a few safe initializers
+        document.addEventListener('DOMContentLoaded', () => { 
+            try { insertTrustBadges(); } catch(e){}
+            try {
+                // Bind product modal openers on image/title clicks (non-destructive)
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    const clickTarget = item.querySelector('img, h4, h3');
+                    if (clickTarget) {
+                        clickTarget.style.cursor = 'pointer';
+                        clickTarget.addEventListener('click', (ev)=>{ ev.stopPropagation(); openProductDetailFromItem(item); });
+                    }
+                });
+            } catch(e){}
+        });
         // Runtime: remove all visible price tags from gallery items
         document.addEventListener('DOMContentLoaded', () => {
             // Remove price display elements from gallery cards
@@ -3669,5 +4030,43 @@
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'993a8f8d2041ff73',t:'MTc2MTMyMDMwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
+<!-- Mini Cart Panel (added) -->
+<div id="miniCart" class="mini-cart hidden">
+    <div class="panel">
+        <div class="p-4 border-b flex items-center justify-between">
+            <div class="font-semibold poppins">Your Cart</div>
+            <button onclick="toggleMiniCart()" class="text-gray-600">✕</button>
+        </div>
+        <div id="miniCartContent" style="max-height:320px; overflow:auto;"></div>
+    </div>
+</div>
+<script>
+    // Generate lightweight product JSON-LD from gallery items for SEO (additive)
+    document.addEventListener('DOMContentLoaded', ()=>{
+        try{
+            const products = [];
+            document.querySelectorAll('.gallery-item').forEach(item=>{
+                const title = item.querySelector('h4,h3') ? item.querySelector('h4,h3').textContent.trim() : '';
+                const img = item.querySelector('img') ? item.querySelector('img').src : '';
+                const desc = item.querySelector('p') ? item.querySelector('p').textContent.trim() : '';
+                if(title){
+                    products.push({
+                        "@type": "Product",
+                        "name": title,
+                        "image": img ? [img] : [],
+                        "description": desc || 'Handmade product by Varnika',
+                        "offers": { "@type": "Offer", "price": "499", "priceCurrency": "INR", "availability": "http://schema.org/InStock" }
+                    });
+                }
+            });
+            if(products.length){
+                const ld = { "@context": "https://schema.org", "@type": "ItemList", "itemListElement": products.map((p,i)=>({ "@type":"ListItem", "position": i+1, "item": p })) };
+                const s = document.createElement('script'); s.type='application/ld+json'; s.textContent = JSON.stringify(ld);
+                document.head.appendChild(s);
+            }
+        }catch(e){console.error('schema error',e)}
+    });
+</script>
 
 
